@@ -1,5 +1,5 @@
-// Package vector provides a vector type and functions for common vector
-// operations.
+// Package vector provides a mathematical vector type and functions for common
+// vector operations.
 package vector
 
 type Numeric interface {
@@ -15,8 +15,8 @@ type Vector[T Numeric] struct {
 	Elems []T
 }
 
-// Dot returns the dot product of the vectors. If the vectors are not in the
-// same vector space or are not of equal length, Dot panics.
+// Dot returns the dot product of the vectors. If the vectors are not of of
+// equal length, Dot panics.
 func Dot[T Numeric](v, w Vector[T]) T {
 	if Len(v) != Len(w) {
 		panic("vector: invalid vector lengths for operation")
@@ -73,6 +73,7 @@ func Negative[T Numeric](v Vector[T]) Vector[T] {
 }
 
 // Add returns a new vector that is the result of adding the given vectors.
+// If the vectors are not of of equal length, Add panics.
 func Add[T Numeric](v, w Vector[T]) Vector[T] {
 	if Len(v) != Len(w) {
 		panic("vector: invalid vector lengths for operation")
@@ -90,6 +91,7 @@ func Add[T Numeric](v, w Vector[T]) Vector[T] {
 
 // Subtract returns a new vector that is the result of subtracting the second
 // vector from the first.
+// If the vectors are not of of equal length, Subtract panics.
 func Subtract[T Numeric](v, w Vector[T]) Vector[T] {
 	if Len(v) != Len(w) {
 		panic("vector: invalid vector lengths for operation")
