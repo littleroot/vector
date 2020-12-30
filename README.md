@@ -1,6 +1,6 @@
 # vector
 
-Generic vector implementation in Go.
+Mathematical vector implementation in Go using generics.
 
 ## Usage
 
