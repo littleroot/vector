@@ -1,0 +1,118 @@
+// Package vector provides a vector type and functions for common vector
+// operations.
+package vector
+
+type Numeric interface {
+	type int, int8, int16, int32, int64,
+		uint, uint8, uint16, uint32, uint64,
+		float32, float64
+}
+
+// Vector represents a mathematical vector.
+// The zero value is a vector with zero elements.
+type Vector[T Numeric] struct {
+	Elems []T
+}
+
+// Dot returns the dot product of the vectors. If the vectors are not in the
+// same vector space or are not of equal length, Dot panics.
+func Dot[T Numeric](v, w Vector[T]) T {
+	if Len(v) != Len(w) {
+		panic("vector: invalid vector lengths for operation")
+	}
+
+	var ret T
+	for i := range v.Elems {
+		ret += v.Elems[i] * w.Elems[i]
+	}
+	return ret
+}
+
+// Cross returns the cross product of two vectors. Only three-dimensional
+// cross products are supported. Cross panics otherwise.
+func Cross[T Numeric](v, w Vector[T]) Vector[T] {
+	if Len(v) != 3 || Len(w) != 3 {
+		panic("vector: invalid vector lengths for operation")
+	}
+	return Vector[T]{
+		Elems: []T{
+			v.Elems[1]*w.Elems[2] - v.Elems[2]*w.Elems[1],
+			v.Elems[2]*w.Elems[0] - v.Elems[0]*w.Elems[2],
+			v.Elems[0]*w.Elems[1] - v.Elems[1]*w.Elems[0],
+		},
+	}
+}
+
+// Len returns the number of elements in the vector.
+func Len[T Numeric](v Vector[T]) int {
+	return len(v.Elems)
+}
+
+// ScalarMultiply returns a new vector that is the result of multiplying the
+// elements of the given vector by the given scalar.
+func ScalarMultiply[T Numeric](v Vector[T], f T) Vector[T] {
+	elems := make([]T, len(v.Elems))
+	for i := range v.Elems {
+		elems[i] = v.Elems[i] * f
+	}
+	return Vector[T]{
+		Elems: elems,
+	}
+}
+
+// Negative returns a new vector that is the negative of the vector.
+func Negative[T Numeric](v Vector[T]) Vector[T] {
+	elems := make([]T, len(v.Elems))
+	for i := range v.Elems {
+		elems[i] = -v.Elems[i]
+	}
+	return Vector[T]{
+		Elems: elems,
+	}
+}
+
+// Add returns a new vector that is the result of adding the given vectors.
+func Add[T Numeric](v, w Vector[T]) Vector[T] {
+	if Len(v) != Len(w) {
+		panic("vector: invalid vector lengths for operation")
+	}
+
+	elems := make([]T, len(v.Elems))
+	for i := range v.Elems {
+		elems[i] = v.Elems[i] + w.Elems[i]
+	}
+
+	return Vector[T]{
+		Elems: elems,
+	}
+}
+
+// Subtract returns a new vector that is the result of subtracting the second
+// vector from the first.
+func Subtract[T Numeric](v, w Vector[T]) Vector[T] {
+	if Len(v) != Len(w) {
+		panic("vector: invalid vector lengths for operation")
+	}
+
+	elems := make([]T, len(v.Elems))
+	for i := range v.Elems {
+		elems[i] = v.Elems[i] - w.Elems[i]
+	}
+
+	return Vector[T]{
+		Elems: elems,
+	}
+}
+
+// Copy returns a new vector that is a deep copy of the input vector.
+// The input vector and the returned vector do not share any memory.
+func Copy[T Numeric](v Vector[T]) Vector[T] {
+	var newElems []T
+	if len(v.Elems) > 0 {
+		newElems = make([]T, len(v.Elems))
+		copy(newElems, v.Elems)
+	}
+	return Vector[T]{
+		Elems: newElems,
+	}
+}

@@ -1,0 +1,109 @@
+package vector
+
+import "testing"
+
+func TestNegative(t *testing.T) {
+	v := Vector[float64]{Elems: []float64{1, -2, 3}}
+	v = Negative(v)
+	equalSlice(t, []float64{-1, 2, -3}, v.Elems)
+}
+
+func TestScalarMultiply(t *testing.T) {
+	v := Vector[float64]{Elems: []float64{1, -2, 3}}
+	v = ScalarMultiply(v, 5)
+	equalSlice(t, []float64{5, -10, 15}, v.Elems)
+}
+
+func TestCopy(t *testing.T) {
+	v := Vector[int]{Elems: []int{1, -2, 3}}
+	cp := Copy(v)
+
+	// modify original
+	v.Elems[0] = 3
+
+	// check that copy is unaffected
+	equalSlice(t, []int{1, -2, 3}, cp.Elems)
+}
+
+func TestAdd(t *testing.T) {
+	v := Vector[int32]{Elems: []int32{1, -2, 3}}
+	w := Vector[int32]{Elems: []int32{0, 0, 3}}
+	x := Vector[int32]{Elems: []int32{11, 44, 3}}
+	result := Add(Add(v, w), x)
+
+	equalSlice(t, []int32{12, 42, 9}, result.Elems)
+}
+
+func TestAdd_panics(t *testing.T) {
+	f := func() {
+		v := Vector[float64]{Elems: []float64{1, -2, 3}}
+		w := Vector[float64]{Elems: []float64{3}}
+		Add(v, w)
+	}
+
+	expectPanic(t, f, "vector: invalid vector lengths for operation")
+}
+
+func TestCross(t *testing.T) {
+	v := Vector[float64]{Elems: []float64{1, -2, 3}}
+	w := Vector[float64]{Elems: []float64{9, 10, 3}}
+	r := Cross(v, w)
+
+	equalSlice(t, []float64{-6 - 30, -(3 - 27), 10 + 18}, r.Elems)
+}
+
+func TestCross_panics(t *testing.T) {
+	f := func() {
+		v := Vector[float64]{Elems: []float64{1, 3}}
+		w := Vector[float64]{Elems: []float64{9, 3}}
+		Cross(v, w)
+	}
+
+	expectPanic(t, f, "vector: invalid vector lengths for operation")
+}
+
+func TestDot(t *testing.T) {
+	v := Vector[float64]{Elems: []float64{1, -2, 3}}
+	w := Vector[float64]{Elems: []float64{9, 10, 3}}
+	r := Dot(v, w)
+
+	if r != (9 - 20 + 9) {
+		t.Errorf("wrong dot product: expected: %v, got: %v", 9-20+9, r)
+	}
+}
+
+func TestDot_panics(t *testing.T) {
+	f := func() {
+		v := Vector[int]{Elems: []int{-2, 3}}
+		w := Vector[int]{Elems: []int{0, 0, 3}}
+		Dot(v, w)
+	}
+
+	expectPanic(t, f, "vector: invalid vector lengths for operation")
+}
+
+func equalSlice[T Numeric](t *testing.T, expected, got []T) {
+	t.Helper()
+	if len(expected) != len(got) {
+		t.Errorf("unequal slice length: expected: %v, got: %v", len(expected), len(got))
+	}
+	for i := range expected {
+		if expected[i] != got[i] {
+			t.Errorf("unequal slice value at index %d: expected: %v, got: %v", i, expected[i], got[i])
+		}
+	}
+}
+
+func expectPanic(t *testing.T, f func(), panicMsg string) {
+	t.Helper()
+
+	defer func() {
+		if r := recover(); r == nil {
+			t.Errorf("expected panic, but code did not panic")
+		} else if r.(string) != panicMsg {
+			t.Errorf("wrong panic message: expected: %q, got: %q", panicMsg, r.(string))
+		}
+	}()
+
+	f()
+}
