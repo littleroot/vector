@@ -18,7 +18,7 @@ type Vector[T Numeric] struct {
 // Dot returns the dot product of the vectors. If the vectors are not of of
 // equal length, Dot panics.
 func Dot[T Numeric](v, w Vector[T]) T {
-	if Len(v) != Len(w) {
+	if NElems(v) != NElems(w) {
 		panic("vector: invalid vector lengths for operation")
 	}
 
@@ -32,7 +32,7 @@ func Dot[T Numeric](v, w Vector[T]) T {
 // Cross returns the cross product of two vectors. Only three-dimensional
 // cross products are supported. Cross panics otherwise.
 func Cross[T Numeric](v, w Vector[T]) Vector[T] {
-	if Len(v) != 3 || Len(w) != 3 {
+	if NElems(v) != 3 || NElems(w) != 3 {
 		panic("vector: invalid vector lengths for operation")
 	}
 	return Vector[T]{
@@ -44,8 +44,8 @@ func Cross[T Numeric](v, w Vector[T]) Vector[T] {
 	}
 }
 
-// Len returns the number of elements in the vector.
-func Len[T Numeric](v Vector[T]) int {
+// NElems returns the number of elements in the vector.
+func NElems[T Numeric](v Vector[T]) int {
 	return len(v.Elems)
 }
 
@@ -75,7 +75,7 @@ func Negative[T Numeric](v Vector[T]) Vector[T] {
 // Add returns a new vector that is the result of adding the given vectors.
 // If the vectors are not of of equal length, Add panics.
 func Add[T Numeric](v, w Vector[T]) Vector[T] {
-	if Len(v) != Len(w) {
+	if NElems(v) != NElems(w) {
 		panic("vector: invalid vector lengths for operation")
 	}
 
@@ -93,7 +93,7 @@ func Add[T Numeric](v, w Vector[T]) Vector[T] {
 // vector from the first.
 // If the vectors are not of of equal length, Subtract panics.
 func Subtract[T Numeric](v, w Vector[T]) Vector[T] {
-	if Len(v) != Len(w) {
+	if NElems(v) != NElems(w) {
 		panic("vector: invalid vector lengths for operation")
 	}
 
